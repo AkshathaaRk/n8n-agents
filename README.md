@@ -1,5 +1,8 @@
 # GalaxyEye Multi-Agent n8n (Simple Setup)
 
+# Preview
+![img alt](https://github.com/Abhishekmystic-KS/n8n_Ai_Agents/blob/3feb084f539d9799c4ab3eb2ccbcde36e3920d4f/n8nimg.png)
+
 ## Project overview
 
 This project is an n8n workflow that routes user messages to specialized AI agents:
