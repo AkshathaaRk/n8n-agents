@@ -1,0 +1,551 @@
+{
+  "name": "GalaxyEye Multi-Agent System",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "galaxyeye",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        -16
+      ],
+      "id": "51037240-4cb2-417a-a18f-b33965dfb085",
+      "name": "Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a high-speed classification agent for GalaxyEye. \nYour only job is to analyze the user's message and determine the best specialized agent to handle it.\n\nRULES:\n1. Respond ONLY with a valid JSON object. \n2. Do not include any conversational text or markdown.\n\nCATEGORIES:\n- \"chat\": For general greetings, company info, or basic conversation (e.g., \"Hello\", \"Who are you?\").\n- \"coding\": ONLY for requests to write, fix, debug, or explain computer programming code.\n- \"task\": For scheduling, reminders, or project management actions.\n- \"file\": For analyzing, summarizing, or processing uploaded documents/files.\n- \"llm\": For complex knowledge-based reasoning or general AI questions.\n\nJSON FORMAT:\n{\n  \"route\": \"category_name\",\n  \"reason\": \"Brief explanation of why this route was chosen\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -160,
+        -16
+      ],
+      "id": "bd4739c8-1eac-435d-be90-e5c5515a20e2",
+      "name": "Agent Router (AI)"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ JSON.parse($json.output).route }}",
+                    "rightValue": "chat",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7e09dc34-7c0f-43b7-9dea-af92acc5e129"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "chat"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6eb7d2a9-d2a0-4ffc-9e77-00a8798e8d9a",
+                    "leftValue": "={{ JSON.parse($json.output).route }}",
+                    "rightValue": "coding",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "coding"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4d9399cb-17d8-4e29-aab5-6f0fe02e2150",
+                    "leftValue": "={{ JSON.parse($json.output).route }}",
+                    "rightValue": "task",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "task"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "05f633ae-b582-4c6c-9862-861d4976254f",
+                    "leftValue": "={{ JSON.parse($json.output).route }}",
+                    "rightValue": "file",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "file"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "48316852-80f4-4e7e-a0fd-b87c882d48ab",
+                    "leftValue": "={{ JSON.parse($json.output).route }}",
+                    "rightValue": "llm",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "llm"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -64
+      ],
+      "id": "0715de4a-ed45-419d-87da-21dfc5a79f9a",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        192
+      ],
+      "id": "aef6694a-9f0e-4c38-aab2-840599d2a2fb",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        368,
+        -464
+      ],
+      "id": "f640b10e-7ff2-4c93-90f2-758ffaae5ef3",
+      "name": "Google Gemini Chat Model1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Webhook').item.json.body.message }}",
+        "options": {
+          "systemMessage": "You are the GalaxyEye Chat Specialist. Your goal is to provide friendly, helpful support. You handle general greetings and questions about the company. Do not attempt to write code or perform complex tasks; simply be the \"face\" of GalaxyEye."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        320,
+        -672
+      ],
+      "id": "b2a380f4-fe92-4ad0-9758-fc2373bfb164",
+      "name": "Chat Specialist"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Webhook').item.json.body.message }}",
+        "options": {
+          "systemMessage": "Role: You are the GalaxyEye Senior Software Engineer. Objective: Provide high-quality code snippets, debug logic, and explain technical architecture. Style: Technical, precise, and modular. Use Markdown code blocks for all code. Rules: > - Always specify the language (Python, JavaScript, etc.).\n\nAdd brief comments to explain complex logic.\n\nIf a request is too vague, ask for specific requirements or a sample input.\n\nDo not engage in small talk; stay focused on the technical solution."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        576,
+        -448
+      ],
+      "id": "32924303-496c-49ad-9bae-fe6790b7a3f6",
+      "name": "coding specialist"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Webhook').item.json.body.message }}",
+        "options": {
+          "systemMessage": "Role: You are the GalaxyEye Operations Manager. Objective: Handle scheduling, reminders, to-do lists, and project management. Style: Direct, organized, and action-oriented. Rules: > - Extract dates, times, and specific actions from the user message.\n\nIf a deadline is missing for a task, ask the user when they would like it completed.\n\nConfirm the details of the task back to the user (e.g., \"I've noted your meeting for Friday at 2 PM\").\n\nYour goal is to keep the user productive and organized."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        832,
+        -176
+      ],
+      "id": "87c5e6dc-1aea-4585-8ac6-eb01f9186cb5",
+      "name": "task specialist"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Webhook').item.json.body.message }}",
+        "options": {
+          "systemMessage": "Role: You are the GalaxyEye Advanced Reasoning Core. Objective: Handle complex questions, deep research, and creative brainstorming that don't fit other categories. Style: Intellectual, thorough, and highly creative. Rules: > - Use \"Chain of Thought\" reasoning to break down complex problems.\n\nProvide multiple perspectives or options when asked for advice.\n\nThis is the \"General Intelligence\" branch; you are the most capable of the agents for abstract thinking.\n\nMaintain a helpful, high-level consultant tone."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        528,
+        608
+      ],
+      "id": "36d9072a-cf82-4414-93f9-fc0a5f347281",
+      "name": "llm specialist"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        560,
+        -256
+      ],
+      "id": "11ae8f6a-fc59-4d9b-9093-e760c15e3645",
+      "name": "Google Gemini Chat Model2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        800,
+        16
+      ],
+      "id": "4542a14b-4d36-49b7-b8b5-60c24f254d36",
+      "name": "Google Gemini Chat Model3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Webhook').item.json.body.message }}",
+        "options": {
+          "systemMessage": "Role: You are the GalaxyEye Document & Data Analyst. Objective: Process, summarize, and extract insights from uploaded files and binary data. Style: Analytical and organized. Use bullet points for summaries. Rules: > - You have access to file data. Carefully read the content before answering.\n\nProvide citations or page references if the document is long.\n\nIf the user asks about a file but none is present in the context, politely ask them to upload it.\n\nFocus on accuracy; do not guess if information is missing from the file."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        656,
+        192
+      ],
+      "id": "90973ad3-fcc6-4981-916d-fdc664b93d70",
+      "name": "file specialist"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        640,
+        400
+      ],
+      "id": "739c3ea4-defd-42f1-9492-e3e522147131",
+      "name": "Google Gemini Chat Model4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        528,
+        784
+      ],
+      "id": "67e7d4dc-e019-49f9-b326-254b2aa70ff8",
+      "name": "Google Gemini Chat Model5"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"response\": $json.output } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1808,
+        -400
+      ],
+      "id": "fa9b7126-10c9-4a4e-9f29-a167fe90cfc4",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Agent Router (AI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent Router (AI)": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent Router (AI)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Chat Specialist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "coding specialist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "task specialist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "file specialist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "llm specialist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Chat Specialist",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "coding specialist",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "task specialist",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "file specialist",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "llm specialist",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Specialist": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "coding specialist": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "task specialist": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "file specialist": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "llm specialist": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "a95bbe09-c3d1-4d9c-9f3c-52023250d7da",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "wfIYmi_a7sqeF1UjiXIEL",
+  "tags": []
+}
