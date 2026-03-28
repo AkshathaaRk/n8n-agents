@@ -90,9 +90,3 @@ To expose again, run Cloudflare command again:
 docker run --rm -it --network host cloudflare/cloudflared:latest tunnel --url http://localhost:5678
 ```
 
----
-
-## Important note
-
-- Keep private export files out of GitHub.
-- Share only `*-public.json` files.
