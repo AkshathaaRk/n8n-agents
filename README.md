@@ -48,7 +48,7 @@ docker run -d \
 ### 3) Start Cloudflare tunnel to localhost (no install needed)
 
 ```bash
-docker run --rm -it --network host cloudflare/cloudflared:latest tunnel --url http://l
+docker run --rm -it --network host cloudflare/cloudflared:latest tunnel --url http://localhost:5678
 ```
 
 Cloudflare will print a public URL like:
@@ -86,4 +86,3 @@ To expose again, run Cloudflare command again:
 ```bash
 docker run --rm -it --network host cloudflare/cloudflared:latest tunnel --url http://localhost:5678
 ```
-
