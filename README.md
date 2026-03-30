@@ -1,7 +1,7 @@
 # GalaxyEye Multi-Agent n8n (Simple Setup)
 
 # Preview
-![img alt](https://github.com/Abhishekmystic-KS/n8n_Ai_Agents/blob/3feb084f539d9799c4ab3eb2ccbcde36e3920d4f/n8nimg.png)
+![img alt](https://github.com/AkshathaaRk/n8n-agents/blob/main/n8nimg.png)
 
 ## Project overview
 
@@ -48,7 +48,7 @@ docker run -d \
 ### 3) Start Cloudflare tunnel to localhost (no install needed)
 
 ```bash
-docker run --rm -it --network host cloudflare/cloudflared:latest tunnel --url http://localhost:5678
+docker run --rm -it --network host cloudflare/cloudflared:latest tunnel --url http://l
 ```
 
 Cloudflare will print a public URL like:

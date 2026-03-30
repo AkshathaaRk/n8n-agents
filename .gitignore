@@ -1,1 +1,5 @@
 GalaxyEye Multi-Agent System.json
+.env
+.env.*
+*.local
+*.secret
