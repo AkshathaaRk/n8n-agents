@@ -86,3 +86,7 @@ To expose again, run Cloudflare command again:
 ```bash
 docker run --rm -it --network host cloudflare/cloudflared:latest tunnel --url http://localhost:5678
 ```
+
+## Co-Developed
+1. Akshatha: https://github.com/AkshathaaRk
+2. Abhishek: https://github.com/Abhishekmystic-KS
