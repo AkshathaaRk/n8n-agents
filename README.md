@@ -45,9 +45,6 @@ docker run -d \
   n8nio/n8n:latest
 ```
 
-Local access:
-- http://localhost:5678
-
 ### 3) Start Cloudflare tunnel to localhost (no install needed)
 
 ```bash
